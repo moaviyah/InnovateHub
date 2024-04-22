@@ -3,20 +3,21 @@ import { SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity, Imag
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { PRIMARY, SECONDARY } from '../colors';
+import { getDatabase, ref, push, set, update } from 'firebase/database';
 
-import { getDatabase, ref, push, set } from 'firebase/database';
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').height;
-const CreateNewPost = ({ navigation }) => {
-    const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('');
-    const [description, setDescription] = useState('');
-    const [media, setMedia] = useState([]);
-    const [links, setLinks] = useState([]);
-    const categories = ['Physical', 'Ecommerce', 'Media', 'Outsourcing'];
+const EditBlog = ({ navigation, route }) => {
+  const {blogData} = route.params;
+    const [title, setTitle] = useState(blogData?.title);
+    const [category, setCategory] = useState(blogData?.category);
+    const [description, setDescription] = useState(blogData?.description);
+    const [media, setMedia] = useState(blogData?.media || null);
+    const [links, setLinks] = useState(blogData?.links || null);
+    const categories = ['Time', 'Sleep', 'Mental', 'Success Story'];
 
     const db = getDatabase();
-    const postsRef = push(ref(db, 'posts'));
+    const postsRef = ref(db, `blogs/${blogData?.key}`);
     const postKey = postsRef.key;
 
       
@@ -54,8 +55,15 @@ const CreateNewPost = ({ navigation }) => {
                     text: 'Add',
                     onPress: (input) => {
                         {
+                            if(!input){
+                                Alert.alert('Link is empty, not included!')
+                                return
+                            }
+                            if (links.length > 0){
                             setLinks([...links, input]);
-                            console.log('link',links, 'input', input)
+                            }else{
+                            setLinks([...links, input]);
+                            }
                         }
                     },
                 },
@@ -88,19 +96,14 @@ const CreateNewPost = ({ navigation }) => {
             title: title,
             category: category,
             description: description,
-            media: media,
-            links: links,
+            media: media || null,
+            links: links ||null,
             time: Date.now(),
             key: postKey
         };
-        set(postsRef, data)
+        update(postsRef, data)
             .then(() => {
-                Alert.alert('Post created successfully:');
-                setTitle('')
-                setCategory('')
-                setDescription('')
-                setMedia([])
-                setLinks([])
+                Alert.alert('Blog Updated successfully:');
             })
             .catch((error) => {
                 Alert.alert('Error saving data:', error);
@@ -116,7 +119,7 @@ const CreateNewPost = ({ navigation }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Image source={require('../assets/left-arrow.png')} style={styles.icon} />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Create new post</Text>
+                    <Text style={styles.title}>Create new Blog</Text>
                     <TouchableOpacity>
                         <Image source={require('../assets/posting.png')} style={[styles.icon, { opacity: 0 }]} />
                     </TouchableOpacity>
@@ -181,19 +184,19 @@ const CreateNewPost = ({ navigation }) => {
                                 style={[styles.categoryButton, category === cat && { backgroundColor: PRIMARY }]}
                                 onPress={() => setCategory(cat)}
                             >
-                                <Text style={{ color: '#fff', fontSize:10, fontWeight:'700' }}>{cat}</Text>
+                                <Text style={{ color: '#fff', fontSize:10, fontWeight:'700', textAlign:'center' }}>{cat}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
-                    <TextInput placeholder='Post Title' style={styles.input} placeholderTextColor={'black'} value={title} onChangeText={setTitle} />
-                   <TextInput placeholder='Enter Post Description' placeholderTextColor={'black'} style={[styles.input, {height:windowWidth*0.08, paddingTop:15} ]}  multiline value={description} onChangeText={setDescription} />
+                    <TextInput placeholder='Blog Title' style={styles.input} placeholderTextColor={'black'} value={title} onChangeText={setTitle} />
+                   <TextInput placeholder='Enter Blog Description' placeholderTextColor={'black'} style={[styles.input, {height:windowWidth*0.08, paddingTop:15} ]}  multiline value={description} onChangeText={setDescription} />
                 </View>
                 <TouchableOpacity
                     style={{ backgroundColor: '#4C6FBF', paddingHorizontal: 10, paddingVertical: 25, borderRadius: 10, marginTop: windowHeight * 0.07, width: windowHeight * 0.45, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}
                     onPress={() => savePost()}
                 >
                     <Text style={{ color: SECONDARY, fontWeight: '600', fontSize: 18 }}>
-                        SAVE POST
+                        SAVE BLOG
                     </Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
@@ -201,7 +204,7 @@ const CreateNewPost = ({ navigation }) => {
     );
 };
 
-export default CreateNewPost;
+export default EditBlog;
 
 const styles = StyleSheet.create({
     container: {
@@ -286,6 +289,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#91818A',
         marginHorizontal: 5,
-        
+        paddingHorizontal:5,
     },
 });

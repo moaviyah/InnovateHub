@@ -20,6 +20,9 @@ import { getReactNativePersistence } from 'firebase/auth/react-native'
 import {  onAuthStateChanged, initializeAuth } from 'firebase/auth';
 import AdminLogin from './screens/AdminLogin';
 import EditPost from './screens/EditPost';
+import CreateNewResource from './screens/CreateNewResource';
+import EditResource from './screens/EditResource';
+import EditBlog from './screens/EditBlog';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -71,8 +74,9 @@ export default function App() {
                   <Stack.Screen name='Chats' component={Chats} />
                   <Stack.Screen name='AdminLogin' component={AdminLogin}/>
                   <Stack.Screen name='EditPost' component={EditPost}/>
-
-
+                  <Stack.Screen name='CreateNewResource' component={CreateNewResource}/>
+                  <Stack.Screen name='EditResource' component={EditResource}/>
+                  <Stack.Screen name='EditBlog' component={EditBlog}/>
                 </>
               )
               :

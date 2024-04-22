@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SECONDARY } from '../colors';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, remove } from 'firebase/database';
 
 const ManagePosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
-
+  const db = getDatabase();
+  const postsRef = ref(db, 'posts');
   useEffect(() => {
     const fetchPosts = async () => {
-      const db = getDatabase();
-      const postsRef = ref(db, 'posts');
       onValue(postsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -24,7 +23,6 @@ const ManagePosts = ({ navigation }) => {
     };
     fetchPosts();
   }, []);
-
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
     const month = date.getMonth() + 1;
@@ -35,11 +33,21 @@ const ManagePosts = ({ navigation }) => {
     return `${formattedMonth}/${formattedDay}/${year}`;
   };
 
+  const deletePost = (postRef)=>{
+    console.log(postRef)
+    remove(ref(db, `posts/${postRef}`)).then(()=>{
+        Alert.alert('Post Deleted.')
+    }).catch((error)=>{
+        Alert.alert('Something went wrong', error.message)
+    })
+}
+  const navigate = (postData)=>{  
+    navigation.navigate('EditPost', {postData})
+  }
+
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={'dark-content'} />
-      <View style={{flex:1}}>
-      {/* Header */}
+    <ScrollView style={styles.container}>
+      <SafeAreaView>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15, alignItems: 'center', paddingTop: 15, marginBottom: 10 }}>
         {/* Back button */}
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -52,34 +60,36 @@ const ManagePosts = ({ navigation }) => {
           <Image source={require('../assets/posting.png')} style={{ height: 30, width: 30 }} />
         </TouchableOpacity>
       </View>
-      <ScrollView style={{}}>
-        {/* Render each post item */}
-        {posts?.map((item, index) => (
-          <View key={index} style={styles.postContainer}>
-            {item.media && (
-              <Image source={item.media} style={styles.image} resizeMode='contain' />
-            )}
-            <View style={styles.textContainer}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.category}>{item.category}</Text>
-              </View>
-              <Text style={styles.date}>{formatDate(item.time)}</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-                <View style={{ width: '70%', }}>
-                  <Text numberOfLines={2} style={styles.description}>{item.description}</Text>
-                </View>
-                <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', width: '30%', paddingHorizontal: 10 }}>
-                  <Image source={require('../assets/editing.png')} style={{ height: 32, width: 32 }} />
-                  <Image source={require('../assets/delete.png')} style={{ height: 32, width: 32 }} />
-                </View>
-              </View>
+      {posts.map((item, index) => (
+        <View key={index} style={styles.postContainer}>
+         {/* {item.image && (
+          <Image source={item.image} style={styles.image} resizeMode='contain' />
+        )} */}
+        <View style={styles.textContainer}>
+          <View style={{ flexDirection:'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.category}>{item.category}</Text>
+          </View>
+          <Text style={styles.date}>{formatDate(item.time)}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+            <View style={{ width: '70%', }}>
+              <Text numberOfLines={2} style={styles.description}>{item.description}</Text>
+            </View>
+            <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', width: '30%', paddingHorizontal: 10 }}>
+             <TouchableOpacity onPress={()=>navigate(item)}> 
+              <Image source={require('../assets/editing.png')} style={{ height: 32, width: 32 }} />
+             </TouchableOpacity>
+             <TouchableOpacity onPress={()=>{deletePost(item.key)}}>
+              <Image source={require('../assets/delete.png')} style={{ height: 32, width: 32 }} />
+             </TouchableOpacity>
             </View>
           </View>
-        ))}
-      </ScrollView>
+        </View>
+       
       </View>
-    </View>
+      ))}
+      </SafeAreaView>
+    </ScrollView>
   );
 }
 
@@ -101,8 +111,8 @@ const styles = StyleSheet.create({
     paddingTop: 10
   },
   image: {
-    width: '100%',
-    height: '70%',
+    height:'20%',
+    width:'100%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20
   },
