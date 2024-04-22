@@ -23,6 +23,7 @@ import EditPost from './screens/EditPost';
 import CreateNewResource from './screens/CreateNewResource';
 import EditResource from './screens/EditResource';
 import EditBlog from './screens/EditBlog';
+import ChatUser from './screens/ChatUser';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -77,6 +78,7 @@ export default function App() {
                   <Stack.Screen name='CreateNewResource' component={CreateNewResource}/>
                   <Stack.Screen name='EditResource' component={EditResource}/>
                   <Stack.Screen name='EditBlog' component={EditBlog}/>
+                  <Stack.Screen name='ChatUser' component={ChatUser}/>
                 </>
               )
               :

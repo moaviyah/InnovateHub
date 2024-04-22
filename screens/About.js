@@ -49,7 +49,7 @@ const About = ({ navigation }) => {
         {/* Button for Chat with us */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#C9644F' }]}
-          onPress={() => { }}
+          onPress={() => {navigation.navigate('ChatUser') }}
         >
           <Image source={require('../assets/customer-support.png')} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>

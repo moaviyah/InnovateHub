@@ -3,17 +3,18 @@ import { SafeAreaView, StatusBar, StyleSheet, Text, View, TouchableOpacity, Imag
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { PRIMARY, SECONDARY } from '../colors';
-import { getDatabase, ref, push, set, update } from 'firebase/database';
 
+import { getDatabase, ref, push, set, update, remove } from 'firebase/database';
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').height;
 const EditBlog = ({ navigation, route }) => {
-  const {blogData} = route.params;
+    const {blogData} = route.params;
     const [title, setTitle] = useState(blogData?.title);
     const [category, setCategory] = useState(blogData?.category);
     const [description, setDescription] = useState(blogData?.description);
-    const [media, setMedia] = useState(blogData?.media || null);
-    const [links, setLinks] = useState(blogData?.links || null);
+    const [media, setMedia] = useState(blogData?.media||[]);
+    const [links, setLinks] = useState(blogData?.links||[]);
+    const key = blogData?.key;
     const categories = ['Time', 'Sleep', 'Mental', 'Success Story'];
 
     const db = getDatabase();
@@ -75,10 +76,9 @@ const EditBlog = ({ navigation, route }) => {
         <Image source={{ uri: item.uri }} style={styles.mediaItem} />
     );
     const renderLink = ({item, index})=>{ 
-        console.log('item',item)
         return(
         <Text style={{fontSize:14}}>
-            link{index +1}: <Text style={{color:'blue'}}>{item}</Text>
+            link{index && index +1}: <Text style={{color:'blue'}}>{item && item}</Text>
         </Text>
         )
     }
@@ -96,19 +96,18 @@ const EditBlog = ({ navigation, route }) => {
             title: title,
             category: category,
             description: description,
-            media: media || null,
-            links: links ||null,
+            media: media,
+            links: links,
             time: Date.now(),
             key: postKey
         };
         update(postsRef, data)
             .then(() => {
-                Alert.alert('Blog Updated successfully:');
+                Alert.alert('Updated successfully:');
             })
             .catch((error) => {
                 Alert.alert('Error saving data:', error);
             });
-            
     };
 
     return (
@@ -119,7 +118,7 @@ const EditBlog = ({ navigation, route }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Image source={require('../assets/left-arrow.png')} style={styles.icon} />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Create new Blog</Text>
+                    <Text style={styles.title}>Edit Blog</Text>
                     <TouchableOpacity>
                         <Image source={require('../assets/posting.png')} style={[styles.icon, { opacity: 0 }]} />
                     </TouchableOpacity>
@@ -188,15 +187,15 @@ const EditBlog = ({ navigation, route }) => {
                             </TouchableOpacity>
                         ))}
                     </View>
-                    <TextInput placeholder='Blog Title' style={styles.input} placeholderTextColor={'black'} value={title} onChangeText={setTitle} />
-                   <TextInput placeholder='Enter Blog Description' placeholderTextColor={'black'} style={[styles.input, {height:windowWidth*0.08, paddingTop:15} ]}  multiline value={description} onChangeText={setDescription} />
+                    <TextInput placeholder='Post Title' style={styles.input} placeholderTextColor={'black'} value={title} onChangeText={setTitle} />
+                   <TextInput placeholder='Enter Post Description' placeholderTextColor={'black'} style={[styles.input, {height:windowWidth*0.08, paddingTop:15} ]}  multiline value={description} onChangeText={setDescription} />
                 </View>
                 <TouchableOpacity
                     style={{ backgroundColor: '#4C6FBF', paddingHorizontal: 10, paddingVertical: 25, borderRadius: 10, marginTop: windowHeight * 0.07, width: windowHeight * 0.45, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}
                     onPress={() => savePost()}
                 >
                     <Text style={{ color: SECONDARY, fontWeight: '600', fontSize: 18 }}>
-                        SAVE BLOG
+                        SAVE POST
                     </Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
@@ -289,6 +288,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#91818A',
         marginHorizontal: 5,
-        paddingHorizontal:5,
+        paddingHorizontal:5
     },
 });
