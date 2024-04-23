@@ -1,5 +1,6 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View, StatusBar, FlatList, Image, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, StatusBar, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 // Importing colors from custom color file
 import { PRIMARY, SECONDARY } from '../colors';
@@ -8,38 +9,53 @@ import { PRIMARY, SECONDARY } from '../colors';
 const windowHeight = Dimensions.get('window').height;
 
 const Home = ({ navigation }) => {
+  const [posts, setPosts] = useState([]);
 
-  // Dummy data for FlatList
-  const data = [
-    {
-      title: 'How to start Gym business',
-      category: 'Physical',
-      imageUrl: require('../assets/card.png'),
-    },
-    {
-      title: 'Books to read in 2024',
-      category: 'E-commerce',
-      imageUrl: require('../assets/card1.png'),
-    },
-  ];
+  useEffect(() => {
+    // Fetch post data from Firebase Realtime Database
+    const fetchPosts = () => {
+      const db = getDatabase();
+      const postsRef = ref(db, 'posts');
+      onValue(postsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Convert the object of posts to an array
+          const postsArray = Object.values(data);
+          setPosts(postsArray);
+        }
+      }, {
+        cancelCallback: (error) => {
+          console.error('Error fetching posts:', error);
+        }
+      });
+    };
+
+    fetchPosts();
+  }, []);
+
+  const navigate =(postData)=>{
+  navigation.navigate('PostDetail', {postData})
+  }
 
   // Rendering each item in FlatList
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
+      <TouchableOpacity onPress={()=>navigate(item)}>
       {/* Title and category */}
       <View style={styles.textContainer}>
         <View>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.title}>{item?.title}</Text>
           <View style={styles.categoryContainer}>
             <Image source={require('../assets/categorization.png')} style={styles.categoryIcon} />
-            <Text style={styles.category}>{item.category}</Text>
+            <Text style={styles.category}>{item?.category}</Text>
           </View>
         </View>
         {/* Favorite icon */}
         <Image source={require('../assets/favorites-outline.png')} style={styles.favoriteIcon} />
       </View>
       {/* Image */}
-      <Image source={item.imageUrl} style={styles.image} resizeMode='contain'/>
+      <Image source={{ uri: item.media[0].uri }} style={styles.image} resizeMode='cover'/>
+      </TouchableOpacity>
     </View>
   );
 
@@ -49,7 +65,7 @@ const Home = ({ navigation }) => {
       <Text style={styles.titleText}>Start your entrepreneurial journey</Text>
       {/* FlatList to display items horizontally */}
       <FlatList
-        data={data}
+        data={posts}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         horizontal
@@ -87,8 +103,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   image: {
-    width: windowHeight * 0.45,
-    height: windowHeight * 0.4,
+    width: windowHeight*0.4,
+    height:windowHeight*0.4,
     borderRadius: 10,
   },
   title: {
@@ -117,4 +133,4 @@ const styles = StyleSheet.create({
     width: 32,
     marginLeft: 15
   },
-})
+});

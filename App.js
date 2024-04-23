@@ -24,6 +24,14 @@ import CreateNewResource from './screens/CreateNewResource';
 import EditResource from './screens/EditResource';
 import EditBlog from './screens/EditBlog';
 import ChatUser from './screens/ChatUser';
+import PostDetail from './screens/PostDetail';
+import Links from './screens/Links';
+import Books from './screens/Books';
+import Docs from './screens/Docs';
+import Time from './screens/Time';
+import Sleep from './screens/Sleep';
+import Mental from './screens/Mental';
+import Success from './screens/Success';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -79,6 +87,14 @@ export default function App() {
                   <Stack.Screen name='EditResource' component={EditResource}/>
                   <Stack.Screen name='EditBlog' component={EditBlog}/>
                   <Stack.Screen name='ChatUser' component={ChatUser}/>
+                  <Stack.Screen name='PostDetail' component={PostDetail}/>
+                  <Stack.Screen name='Links' component={Links}/>
+                  <Stack.Screen name='Books' component={Books}/>
+                  <Stack.Screen name='Docs' component={Docs}/>
+                  <Stack.Screen name='Time' component={Time}/>
+                  <Stack.Screen name='Sleep' component={Sleep}/>
+                  <Stack.Screen name='Mental' component={Mental}/>
+                  <Stack.Screen name='Success' component={Success}/>
                 </>
               )
               :

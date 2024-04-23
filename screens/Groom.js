@@ -17,7 +17,7 @@ const Groom = ({ navigation }) => {
         {/* Button for helpful links */}
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Links')}}
         >
           <Text style={styles.buttonText}>
             Helpful links for your entrepreneurial journey
@@ -27,7 +27,7 @@ const Groom = ({ navigation }) => {
         {/* Button for books */}
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#8F8389' }]}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Books')}}
         >
           <Text style={styles.buttonText}>
             Books are always your best friends
@@ -37,7 +37,7 @@ const Groom = ({ navigation }) => {
         {/* Button for useful files/documents */}
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#4B5842' }]}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Docs')}}
         >
           <Text style={styles.buttonText}>
             Useful files/documents
@@ -50,7 +50,7 @@ const Groom = ({ navigation }) => {
         {/* Button for time management */}
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Time')}}
         >
           <Text style={styles.buttonText}>
             Time Management
@@ -60,7 +60,7 @@ const Groom = ({ navigation }) => {
         {/* Button for improving sleep/productivity */}
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#ED7D3A' }]}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Sleep')}}
         >
           <Text style={styles.buttonText}>
             Improve your Sleep/productivity
@@ -70,7 +70,7 @@ const Groom = ({ navigation }) => {
         {/* Button for mental health */}
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#4E6E58' }]}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Mental')}}
         >
           <Text style={styles.buttonText}>
             Mental Health
@@ -80,7 +80,7 @@ const Groom = ({ navigation }) => {
         {/* Button for success stories */}
         <TouchableOpacity 
           style={[styles.button, { backgroundColor: '#33312E' }]}
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Success')}}
         >
           <Text style={styles.buttonText}>
             Success Stories
